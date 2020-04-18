@@ -1,7 +1,7 @@
 {
 	"name": "vue-object",
 	"private": false,
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "Typescript template",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -17,7 +17,11 @@
 		"url": "git+https://github.com/berhalak/vue-object.git"
 	},
 	"author": "berhalak",
-	"keywords": [],
+	"keywords": [
+		"vue",
+		"library",
+		"oop"
+	],
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/berhalak/vue-object/issues"

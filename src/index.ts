@@ -53,6 +53,23 @@ export function emit(self: any, msg: string, payload?: any) {
     self.$emit(msg, payload);
 }
 
+export const Wrap = {
+    functional: true,
+    render(el: any, ctx) {
+        const t = ctx.slots();
+        const child = t?.default[0];
+        if (!child) return null;
+        child.data.class = child.data.class ? (child.data.class + " ") : "";
+        child.data.class += ctx.data.class;
+        child.data.style = child.data.style ? (child.data.style + "; ") : "";
+        child.data.style = child.data.style + ";" + ctx.data.style + ";";
+        if (ctx.data.on) {
+            child.data.on = Object.assign({}, child.data.on, ctx.data.on);
+        }
+        return child;
+    }
+} as any;
+
 function smart(h: any) {
     const custom = function (...args: any[]) {
         if (args) {
