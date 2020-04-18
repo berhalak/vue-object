@@ -73,27 +73,32 @@ export const Wrap = {
 
 function smart(h: any) {
     const custom = function (...args: any[]) {
-        if (args) {
-            if (args[0] && isClass(args[0])) {
-                args[0] = Convert(args[0]);
-            }
-            if (args[1] && args[1].length) {
-                for (let i = 0; i < args[1].length; i++) {
-                    const el = args[1][i];
-                    if (typeof el == 'object' && el && typeof el.render == 'function') {
-                        args[1][i] = el.render(custom);
+
+        function convert(el: any) {
+            if (el) {
+                if (Array.isArray(el)) {
+                    for (let i = 0; i < el.length; i++) {
+                        el[i] = convert(el[i]);
+                    }
+                    return el;
+                } else {
+                    if (isClass(el)) {
+                        return Convert(el);
+                    } else {
+                        if (typeof el == 'object' && el.render) {
+                            if (!el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode')
+                                return el.render(h);
+                        }
                     }
                 }
             }
-            if (args[2] && args[2].length) {
-                for (let i = 0; i < args[2].length; i++) {
-                    const el = args[2][i];
-                    if (typeof el == 'object' && el && typeof el.render == 'function') {
-                        args[2][i] = el.render(custom);
-                    }
-                }
-            }
+            return el;
         }
+
+        if (args) {
+            args = convert(args);
+        }
+
         return h(...args);
     }
 
@@ -114,7 +119,7 @@ export function component(target: any) {
 function methods(t: any, flat = false) {
     if (t == null) return [];
 
-    function* proto(p: any) {
+    function* proto(p: any): any {
         for (let key of Object.getOwnPropertyNames(p)) {
             if (key != 'constructor')
                 yield key
