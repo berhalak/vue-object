@@ -1,7 +1,7 @@
 {
-	"name": "@berhalak/ts-template",
+	"name": "vue-object",
 	"private": false,
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Typescript template",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -14,15 +14,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/berhalak/ts-template.git"
+		"url": "git+https://github.com/berhalak/vue-object.git"
 	},
 	"author": "berhalak",
 	"keywords": [],
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/berhalak/ts-template/issues"
+		"url": "https://github.com/berhalak/vue-object/issues"
 	},
-	"homepage": "https://github.com/berhalak/ts-template#readme",
+	"homepage": "https://github.com/berhalak/vue-object#readme",
 	"devDependencies": {
 		"@types/jest": "^25.1.3",
 		"@types/node": "^13.7.5",

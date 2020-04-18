@@ -1,2 +1,3 @@
-# ts-template
-Typescript package template
+# vue-object
+
+Treat normal objects as vue components
