@@ -87,7 +87,7 @@ function smart(h: any) {
                     } else {
                         if (typeof el == 'object' && el.render) {
                             if (!el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode')
-                                return el.render(h);
+                                return el.render(custom);
                         }
                     }
                 }
