@@ -3,6 +3,10 @@ export function prop(target: any, name: string) {
     target.constructor.props.push(name);
 }
 
+export function event(target: any, name: string) {
+    target.constructor.events = target.props || [];
+    target.constructor.events.push(name);
+}
 
 function isClass(obj: any) {
     const isCtorClass = obj.constructor
@@ -16,8 +20,41 @@ function isClass(obj: any) {
     return isCtorClass || isPrototypeCtorClass
 }
 
+export const Renderer = {
+    install(vue: any) {
+        vue.mixin({
+            beforeCreate(this: any) {
+                const was = this.$createElement;
+                this.$createElement = function (...args: any[]) {
+                    return smart(was)(...args);
+                }
+            }
+        })
+    }
+}
+
+export type Handler = (payload?: any) => any;
+
+export function slot(self: any) {
+    if (self.$slots)
+        return self.$slots.default;
+    return null;
+}
+
+export function input(self: any, payload?: any) {
+    emit(self, "input", payload);
+}
+
+export function click(self: any) {
+    emit(self, "click");
+}
+
+export function emit(self: any, msg: string, payload?: any) {
+    self.$emit(msg, payload);
+}
+
 function smart(h: any) {
-    return function (...args: any[]) {
+    const custom = function (...args: any[]) {
         if (isClass(args[0])) {
             args[0] = Convert(args[0]);
         }
@@ -25,18 +62,23 @@ function smart(h: any) {
             for (let i = 0; i < args[1].length; i++) {
                 const el = args[1][i];
                 if (typeof el == 'object' && el && typeof el.render == 'function') {
-                    args[1][i] = el.render(h);
+                    args[1][i] = el.render(custom);
                 }
             }
         }
         return h(...args);
     }
+
+    return custom;
 }
 
 
 export function component(target: any) {
     const was = target.prototype.render;
     target.prototype.render = function (h: any) {
+        if (h.__smart) {
+            return was.call(this, h);
+        }
         return was.call(this, smart(h));
     }
 }
@@ -57,6 +99,15 @@ export function Convert(type: any): any {
         render: type.prototype.render
     } as any;
 
+    if (type.events) {
+        type.events.forEach((name: string) => {
+            Object.assign(v.methods, {
+                [name](payload: any) {
+                    (this as any).$emit(name, payload);
+                }
+            })
+        })
+    }
 
     return v;
 }
