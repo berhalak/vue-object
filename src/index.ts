@@ -55,22 +55,24 @@ export function emit(self: any, msg: string, payload?: any) {
 
 function smart(h: any) {
     const custom = function (...args: any[]) {
-        if (isClass(args[0])) {
-            args[0] = Convert(args[0]);
-        }
-        if (args[1] && args[1].length) {
-            for (let i = 0; i < args[1].length; i++) {
-                const el = args[1][i];
-                if (typeof el == 'object' && el && typeof el.render == 'function') {
-                    args[1][i] = el.render(custom);
+        if (args) {
+            if (args[0] && isClass(args[0])) {
+                args[0] = Convert(args[0]);
+            }
+            if (args[1] && args[1].length) {
+                for (let i = 0; i < args[1].length; i++) {
+                    const el = args[1][i];
+                    if (typeof el == 'object' && el && typeof el.render == 'function') {
+                        args[1][i] = el.render(custom);
+                    }
                 }
             }
-        }
-        if (args[2] && args[2].length) {
-            for (let i = 0; i < args[2].length; i++) {
-                const el = args[2][i];
-                if (typeof el == 'object' && el && typeof el.render == 'function') {
-                    args[2][i] = el.render(custom);
+            if (args[2] && args[2].length) {
+                for (let i = 0; i < args[2].length; i++) {
+                    const el = args[2][i];
+                    if (typeof el == 'object' && el && typeof el.render == 'function') {
+                        args[2][i] = el.render(custom);
+                    }
                 }
             }
         }
