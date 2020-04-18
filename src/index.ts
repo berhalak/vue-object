@@ -66,6 +66,14 @@ function smart(h: any) {
                 }
             }
         }
+        if (args[2] && args[2].length) {
+            for (let i = 0; i < args[2].length; i++) {
+                const el = args[2][i];
+                if (typeof el == 'object' && el && typeof el.render == 'function') {
+                    args[2][i] = el.render(custom);
+                }
+            }
+        }
         return h(...args);
     }
 
