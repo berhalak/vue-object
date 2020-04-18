@@ -82,7 +82,7 @@ function smart(h: any) {
                     }
                     return el;
                 } else {
-                    if (isClass(el)) {
+                    if (typeof el == 'function' && isClass(el)) {
                         return Convert(el);
                     } else {
                         if (typeof el == 'object' && el.render) {
