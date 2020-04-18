@@ -55,9 +55,10 @@ export function emit(self: any, msg: string, payload?: any) {
 
 export const Wrap = {
     functional: true,
-    render(el: any, ctx) {
+    render(el: any, ctx: any) {
         const t = ctx.slots();
-        const child = t?.default[0];
+        if (!t) return;
+        const child = t.default[0];
         if (!child) return null;
         child.data.class = child.data.class ? (child.data.class + " ") : "";
         child.data.class += ctx.data.class;
@@ -110,9 +111,35 @@ export function component(target: any) {
     }
 }
 
+function methods(t: any, flat = false) {
+    if (t == null) return [];
+
+    function* proto(p: any) {
+        for (let key of Object.getOwnPropertyNames(p)) {
+            if (key != 'constructor')
+                yield key
+        }
+        if (flat) {
+            let parent = Object.getPrototypeOf(p)
+            if (parent && parent != Object.prototype) {
+                yield* proto(parent)
+            }
+        }
+    }
+
+    if (typeof t == 'function') {
+        return [...proto(t.prototype)]
+    } else {
+        return [...proto(t.constructor.prototype)]
+    }
+}
+
 export function Convert(type: any): any {
+
+    if (type.__compiled) return type.__compiled;
+
     const v = {
-        methods: type.prototype,
+        methods: {},
         props: type.props,
         data() {
             const data = new type();
@@ -123,7 +150,9 @@ export function Convert(type: any): any {
             }
             return data;
         },
-        render: type.prototype.render
+        render(h: any) {
+            return type.prototype.render.call(this, h);
+        }
     } as any;
 
     if (type.events) {
@@ -135,6 +164,12 @@ export function Convert(type: any): any {
             })
         })
     }
+
+    for (let m of methods(type)) {
+        v.methods[m] = type.prototype[m];
+    }
+
+    type.__compiled = v;
 
     return v;
 }
