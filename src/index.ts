@@ -143,7 +143,7 @@ export function Convert(type: any): any {
 
     if (type.__compiled) return type.__compiled;
 
-    const v = {
+    const definition = {
         methods: {},
         props: type.props,
         data() {
@@ -162,19 +162,26 @@ export function Convert(type: any): any {
 
     if (type.events) {
         type.events.forEach((name: string) => {
-            Object.assign(v.methods, {
+            Object.assign(definition.methods, {
                 [name](payload: any) {
                     (this as any).$emit(name, payload);
                 }
             })
         })
     }
-
-    for (let m of methods(type)) {
-        v.methods[m] = type.prototype[m];
+    definition.computed = {
+        slot: {
+            get() {
+                return (this as any).$slots.default;
+            }
+        }
     }
 
-    type.__compiled = v;
+    for (let m of methods(type)) {
+        definition.methods[m] = type.prototype[m];
+    }
 
-    return v;
+    type.__compiled = definition;
+
+    return definition;
 }
