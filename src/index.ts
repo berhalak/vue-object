@@ -1,10 +1,10 @@
 export function prop(target: any, name: string) {
-    target.constructor.props = target.props || [];
+    target.constructor.props = target.constructor.props || [];
     target.constructor.props.push(name);
 }
 
 export function event(target: any, name: string) {
-    target.constructor.events = target.props || [];
+    target.constructor.events = target.constructor.events || [];
     target.constructor.events.push(name);
 }
 
