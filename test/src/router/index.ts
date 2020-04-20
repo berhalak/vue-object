@@ -2,9 +2,10 @@ import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import { Home } from '../views/Home'
 import { About } from '../views/About'
-import { Convert } from 'vue-object'
+import { Convert, render } from '../api'
 
 Vue.use(VueRouter)
+
 
 const routes: Array<RouteConfig> = [
   {
@@ -15,9 +16,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: Convert(About)
   }
 ]
@@ -27,5 +25,12 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+
+render.plugin({
+  data(config: any) {
+    config.router = router;
+  }
+});
 
 export default router

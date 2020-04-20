@@ -198,21 +198,45 @@ declare global {
     }
 }
 
-export interface render {
-    install(vue: any);
+const configuration = {
+    vue: null,
+    plugins: []
 }
 
 export function render(main: any, tag = '#app') {
-    const Vue = (render as any).vue
-    Object.assign(main, Vue.observable(main));
-    new Vue({
-        render: (h) => {
-            return main.render(h);
+    const Vue = configuration.vue;
+    let vueData = {};
+    if (!main._compiled) {
+        Object.assign(main, Vue.observable(main));
+        vueData = {
+            render: (h: any) => {
+                return main.render(h);
+            }
         }
-    }).$mount(tag)
+    } else {
+        vueData = {
+            render: (h: any) => {
+                return h(main);
+            }
+        }
+    }
+
+    if (configuration.plugins) {
+        configuration.plugins.forEach(x => x.data(vueData));
+    }
+
+    new Vue(vueData).$mount(tag);
 }
 
 render.install = function (vue: any) {
     Renderer.install(vue);
-    (render as any).vue = vue;
+    configuration.vue = vue;
+}
+
+type Config = {
+    data?: (config: any) => any;
+}
+
+render.plugin = function (config: Config) {
+    configuration.plugins.push(config);
 }

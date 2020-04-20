@@ -1,12 +1,12 @@
-import { Form } from './Form';
 import { render } from "@/api"
+import "./router"
+import App from "./App.vue"
 import Vue from "vue";
+
 Vue.use(render);
 
-const main = new Form();
-
-render(main);
+render(App);
 
 setTimeout(() => {
-    main.text = "test";
+    //main.text = "test";
 }, 1000)
