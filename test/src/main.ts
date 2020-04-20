@@ -1,13 +1,11 @@
-import { Form } from './Main';
+import { Form } from './Form';
 import { render } from "@/api"
 import Vue from "vue";
-
+Vue.use(render);
 
 const main = new Form();
 
-render(main)
-    .using(Vue)
-    .mount();
+render(main);
 
 setTimeout(() => {
     main.text = "test";

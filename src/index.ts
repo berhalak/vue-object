@@ -198,20 +198,21 @@ declare global {
     }
 }
 
+export interface render {
+    install(vue: any);
+}
 
-export function render(main: any) {
-    return {
-        using(Vue: any) {
-            return {
-                mount(tag: string = "#app") {
-                    Object.assign(main, Vue.observable(main));
-                    new Vue({
-                        render: (h) => {
-                            return main.render(h);
-                        }
-                    }).$mount(tag)
-                }
-            }
+export function render(main: any, tag = '#app') {
+    const Vue = (render as any).vue
+    Object.assign(main, Vue.observable(main));
+    new Vue({
+        render: (h) => {
+            return main.render(h);
         }
-    }
+    }).$mount(tag)
+}
+
+render.install = function (vue: any) {
+    Renderer.install(vue);
+    (render as any).vue = vue;
 }
