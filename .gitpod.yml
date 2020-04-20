@@ -1,0 +1,8 @@
+tasks:
+  - init: yarn install
+
+vscode:
+  extensions:
+    - octref.vetur@0.23.0:TEzauMObB6f3i2JqlvrOpA==
+    - vscode-icons-team.vscode-icons@10.0.0:9G2nNF/k04qaOhAogmEuMg==
+    - bradlc.vscode-tailwindcss@0.2.0:PwefoJooyem7BVrpU3Bjww==
