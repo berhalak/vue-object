@@ -1,15 +1,14 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import { Renderer } from '@/api';
+import { Form } from './Main';
+import { render } from "@/api"
+import Vue from "vue";
 
-Vue.config.productionTip = false
 
-Vue.use(Renderer);
+const main = new Form();
 
-new Vue({
-  router,
-  render: (h) => {
-    return h(App);
-  }
-}).$mount('#app')
+render(main)
+    .using(Vue)
+    .mount();
+
+setTimeout(() => {
+    main.text = "test";
+}, 1000)

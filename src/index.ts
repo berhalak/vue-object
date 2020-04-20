@@ -185,3 +185,33 @@ export function Convert(type: any): any {
 
     return definition;
 }
+
+declare global {
+    namespace JSX {
+        // tslint:disable no-empty-interface
+        interface Element { }
+        // tslint:disable no-empty-interface
+        interface ElementClass { }
+        interface IntrinsicElements {
+            [elem: string]: any
+        }
+    }
+}
+
+
+export function render(main: any) {
+    return {
+        using(Vue: any) {
+            return {
+                mount(tag: string = "#app") {
+                    Object.assign(main, Vue.observable(main));
+                    new Vue({
+                        render: (h) => {
+                            return main.render(h);
+                        }
+                    }).$mount(tag)
+                }
+            }
+        }
+    }
+}
