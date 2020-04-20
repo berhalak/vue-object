@@ -22,6 +22,23 @@ class Text {
   }
 }
 
+class Info {
+    @prop
+    text : string;
+
+    constructor(data? : { text: string}){
+        if (data){
+            this.value = data.text;
+        }
+    }
+
+    private value = '';
+
+    render(){
+        return <div style="color: red">{this.value}</div>
+    }
+}
+
 export class About {
 
   panel = new Panel();
@@ -34,6 +51,7 @@ export class About {
   render(h: any) {
 
     return <div>
+        <Info text="hello" />
       <Panel>
         jsx panel content
         </Panel>

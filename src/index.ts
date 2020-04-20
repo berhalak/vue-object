@@ -147,7 +147,7 @@ export function Convert(type: any): any {
         methods: {},
         props: type.props,
         data() {
-            const data = new type();
+            const data = new type((this as any).$props);
             if (type.props) {
                 type.props.forEach((name: string) => {
                     delete data[name]
