@@ -1,7 +1,7 @@
 {
 	"name": "vue-object",
 	"private": false,
-	"version": "0.0.18",
+	"version": "0.0.19",
 	"description": "Typescript template",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",

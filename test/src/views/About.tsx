@@ -1,4 +1,4 @@
-import { prop, event, slot, Handler } from "@/api"
+import { prop, event, slot, Handler, Container } from "@/api"
 
 
 class Panel {
@@ -23,20 +23,20 @@ class Text {
 }
 
 class Info {
-    @prop
-    text : string;
+  @prop
+  text: string;
 
-    constructor(data? : { text: string}){
-        if (data){
-            this.value = data.text;
-        }
+  constructor(data?: { text: string }) {
+    if (data) {
+      this.value = data.text;
     }
+  }
 
-    private value = '';
+  private value = '';
 
-    render(){
-        return <div style="color: red">{this.value}</div>
-    }
+  render() {
+    return <div style="color: red">{this.value}</div>
+  }
 }
 
 export class About {
@@ -50,8 +50,18 @@ export class About {
 
   render(h: any) {
 
+    const container = new Container();
+    container.when(Info).use(x => {
+      return <div>Changed {x.text}</div>
+    });
+
+
+    let info = new Info({ text: 'hej' })
+
+
+    h = container.build(h);
     return <div>
-        <Info text="hello" />
+      {info}
       <Panel>
         jsx panel content
         </Panel>

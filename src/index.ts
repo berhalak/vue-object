@@ -20,17 +20,24 @@ function isClass(obj: any) {
     return isCtorClass || isPrototypeCtorClass
 }
 
+
+
 export const Renderer = {
     install(vue: any) {
         vue.mixin({
             beforeCreate(this: any) {
                 const was = this.$createElement;
+                const self = this;
                 this.$createElement = function (...args: any[]) {
+                    for (let p of Renderer.plugins) {
+                        args = p(self, args);
+                    }
                     return smart(was)(...args);
                 }
             }
         })
-    }
+    },
+    plugins: []
 }
 
 export type Handler = (payload?: any) => any;
@@ -242,11 +249,6 @@ render.plugin = function (config: Config) {
     configuration.plugins.push(config);
 }
 
-
-
-
-
-
 export class Container {
     private _map = new Map<any, any>();
 
@@ -262,7 +264,7 @@ export class Container {
 
     build(render: any) {
         let map = this._map;
-        function tap(...args: any[]) {
+        function config(args: any[]) {
             if (args.length >= 3) {
                 for (let i = 0; i < args[2].length; i++) {
                     let el = args[2][i];
@@ -272,9 +274,59 @@ export class Container {
                     }
                 }
             }
-            return render(...args);
+            if (args.length >= 2) {
+                for (let i = 0; i < args[1].length; i++) {
+                    let el = args[1][i];
+                    if (el) {
+                        let type = el.constructor;
+                        if (type && map.has(type)) {
+                            args[1][i] = map.get(type)(el);
+                        }
+                    }
+                }
+            }
+            if (args[0]) {
+                if (map.has(args[0])) {
+                    args[0] = map.get(args[0]);
+                }
+            }
+            return args;
+        }
+        let stack = 0;
+        function tap(...args: any[]) {
+            try {
+                stack++;
+
+                if (stack > 100) {
+                    throw new Error("Overflow exception, don't include resolved elements");
+                }
+                if (render != tap) {
+                    args = config(args);
+                }
+                const element = render(...args);
+                if (element.context)
+                    element.context.__container = config;
+                return element;
+            }
+            finally {
+                stack--;
+            }
         }
         return tap;
     }
 }
 
+Renderer.plugins.push(function (element, args: any[]) {
+
+    if (!element) return args;
+
+    let start = element;
+    do {
+        if (start.__container) {
+            return start.__container(args);
+        }
+        start = start.$parent;
+    } while (start);
+
+    return args;
+});
