@@ -60,6 +60,7 @@ export const Wrap = {
         if (!t) return;
         const child = t.default[0];
         if (!child) return null;
+        if (!child.data) child.data = {};
         child.data.class = child.data.class ? (child.data.class + " ") : "";
         child.data.class += ctx.data.class;
         child.data.style = child.data.style ? (child.data.style + "; ") : "";
