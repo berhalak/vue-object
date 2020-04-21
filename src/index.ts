@@ -241,3 +241,45 @@ type Config = {
 render.plugin = function (config: Config) {
     configuration.plugins.push(config);
 }
+
+
+
+
+
+
+export class Container {
+    constructor(private render: any) {
+
+    }
+
+    private _map = new Map<any, any>();
+
+    when(type: any) {
+        let self: Container = this;
+        return {
+            use(handler: (value: any) => any) {
+                self._map.set(type, handler);
+                return self;
+            }
+        }
+    }
+
+    build() {
+        let proper = this.render;
+        let map = this._map;
+        function tap(...args: any[]) {
+            if (args.length >= 3) {
+                for (let i = 0; i < args[2].length; i++) {
+                    let el = args[2][i];
+                    let type = el.constructor;
+                    if (type && map.has(type)) {
+                        args[2][i] = map.get(type)(el);
+                    }
+                }
+            }
+            return proper(...args);
+        }
+        return tap;
+    }
+}
+
