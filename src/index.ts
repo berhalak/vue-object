@@ -248,10 +248,6 @@ render.plugin = function (config: Config) {
 
 
 export class Container {
-    constructor(private render: any) {
-
-    }
-
     private _map = new Map<any, any>();
 
     when(type: any) {
@@ -264,8 +260,7 @@ export class Container {
         }
     }
 
-    build() {
-        let proper = this.render;
+    build(render: any) {
         let map = this._map;
         function tap(...args: any[]) {
             if (args.length >= 3) {
@@ -277,7 +272,7 @@ export class Container {
                     }
                 }
             }
-            return proper(...args);
+            return render(...args);
         }
         return tap;
     }
