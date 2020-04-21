@@ -30,6 +30,13 @@ export const Renderer = {
                 const was = this.$createElement;
                 const self = this;
                 this.$createElement = function (...args: any[]) {
+
+                    // for (let p of configuration.plugins) {
+                    //     if (p instanceof Container) {
+                    //         args = p.resolve(args);
+                    //     }
+                    // }
+
                     return smart(was)(...args);
                 }
             }
@@ -104,11 +111,6 @@ function smart(h: any) {
         if (args) {
 
 
-            for (let p of configuration.plugins) {
-                if (p instanceof Container) {
-                    args = p.resolve(args);
-                }
-            }
 
             args = convert(args);
         }
