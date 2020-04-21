@@ -1,11 +1,12 @@
-import { render, Renderer } from "@/api"
+import { render, Renderer, Plugin } from "@/api"
 import "./router"
-import App from "./App.vue"
 import Vue from "vue";
-import { container } from '@/container';
 import { About } from '@/views/About';
 
+import Box from "./Box.vue"
+import { Test } from '@/views/Test';
+
 Vue.use(Renderer);
-Vue.use(container);
+Vue.use(Plugin(Test, Box));
 
 render(new About());

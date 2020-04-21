@@ -256,6 +256,19 @@ render.plugin = function (config: Config) {
     configuration.plugins.push(config);
 }
 
+export function Plugin(from: any, to: any) {
+    return {
+        install() {
+            let container = configuration.plugins.find(x => x instanceof Container) as Container;
+            if (!container) {
+                container = new Container();
+                configuration.plugins.push(container);
+            }
+            container.when(from).use(x => to);
+        }
+    }
+}
+
 export class Container {
 
     private _map = new Map<any, any>();
