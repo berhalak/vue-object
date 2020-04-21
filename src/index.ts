@@ -20,12 +20,21 @@ function isClass(obj: any) {
     return isCtorClass || isPrototypeCtorClass
 }
 
+
+
 export const Renderer = {
     install(vue: any) {
+        configuration.vue = vue;
         vue.mixin({
             beforeCreate(this: any) {
                 const was = this.$createElement;
+                const self = this;
                 this.$createElement = function (...args: any[]) {
+                    for (let p of configuration.plugins) {
+                        if (p instanceof Container) {
+                            args = p.resolve(args);
+                        }
+                    }
                     return smart(was)(...args);
                 }
             }
@@ -223,7 +232,7 @@ export function render(main: any, tag = '#app') {
     }
 
     if (configuration.plugins) {
-        configuration.plugins.forEach(x => x.data(vueData));
+        configuration.plugins.filter(x => x.data).forEach(x => x.data(vueData));
     }
 
     new Vue(vueData).$mount(tag);
@@ -242,13 +251,13 @@ render.plugin = function (config: Config) {
     configuration.plugins.push(config);
 }
 
-
-
-
-
-
 export class Container {
+
     private _map = new Map<any, any>();
+
+    install(vue: any) {
+        configuration.plugins.push(this);
+    }
 
     when(type: any) {
         let self: Container = this;
@@ -260,21 +269,35 @@ export class Container {
         }
     }
 
-    build(render: any) {
-        let map = this._map;
-        function tap(...args: any[]) {
-            if (args.length >= 3) {
-                for (let i = 0; i < args[2].length; i++) {
-                    let el = args[2][i];
+    resolve(args: any[]) {
+        const map = this._map;
+
+        if (args.length >= 3 && args[2]) {
+            for (let i = 0; i < args[2].length; i++) {
+                let el = args[2][i];
+                let type = el.constructor;
+                if (type && map.has(type)) {
+                    args[2][i] = map.get(type)(el);
+                }
+            }
+        }
+        if (args.length >= 2 && args[1]) {
+            for (let i = 0; i < args[1].length; i++) {
+                let el = args[1][i];
+                if (el) {
                     let type = el.constructor;
                     if (type && map.has(type)) {
-                        args[2][i] = map.get(type)(el);
+                        args[1][i] = map.get(type)(el);
                     }
                 }
             }
-            return render(...args);
         }
-        return tap;
+        if (args[0]) {
+            if (map.has(args[0])) {
+                args[0] = map.get(args[0]);
+            }
+        }
+
+        return args;
     }
 }
-

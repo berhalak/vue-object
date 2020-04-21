@@ -1,9 +1,11 @@
-import { render } from "@/api"
+import { render, Renderer } from "@/api"
 import "./router"
 import App from "./App.vue"
 import Vue from "vue";
+import { container } from '@/container';
 
-Vue.use(render);
+Vue.use(Renderer);
+Vue.use(container);
 
 render(App);
 
