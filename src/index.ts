@@ -30,10 +30,7 @@ export const Renderer = {
                 const was = this.$createElement;
                 const self = this;
                 this.$createElement = function (...args: any[]) {
-
-
-
-                    return smart(was)(...args);
+                    return customRender(was, args);
                 }
             }
         })
@@ -79,61 +76,59 @@ export const Wrap = {
     }
 } as any;
 
-function smart(h: any) {
-    const custom = function (...args: any[]) {
+function customRender(h: any, args: any[]) {
+    const self = (...sub: any[]) => {
+        return customRender(h, sub);
+    }
 
-        function convert(el: any) {
-            if (el) {
-                if (Array.isArray(el)) {
-                    for (let i = 0; i < el.length; i++) {
-                        el[i] = convert(el[i]);
-                    }
-                    return el;
-                } else {
-                    if (typeof el == 'function' && isClass(el)) {
-                        return Convert(el);
-                    } else {
-                        if (typeof el == 'object' && el.render) {
-                            if (!el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode') {
-
-                                for (let p of configuration.plugins) {
-                                    if (p instanceof Container) {
-                                        const r = p.resolve(el);
-                                        if (r != null) {
-                                            return r.render(custom);
-                                        }
-                                    }
-                                }
-
-                                return el.render(custom);
-                            }
-                        }
-                    }
+    function resolve(el: any) {
+        for (let p of configuration.plugins) {
+            if (p instanceof Container) {
+                const r = p.resolve(el, self);
+                if (r != null) {
+                    return r;
                 }
             }
-            return el;
         }
-
-
-        if (args) {
-            args = convert(args);
-        }
-
-        return h(...args);
+        return el;
     }
 
-    return custom;
-}
-
-
-export function component(target: any) {
-    const was = target.prototype.render;
-    target.prototype.render = function (h: any) {
-        if (h.__smart) {
-            return was.call(this, h);
+    function isPlain(el: any) {
+        if (el && !el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode') {
+            return typeof el.render == 'function';
         }
-        return was.call(this, smart(h));
+        return false;
     }
+
+    let element = resolve(args[0]);
+
+    if (isPlain(element)) {
+        return element.render(self);
+    }
+
+    if (element.constructor?.name == "VNode") {
+        return element;
+    }
+
+    if (typeof element == 'function') {
+        element = Convert(element);
+    }
+
+    args[0] = element;
+
+    let children = Array.isArray(args[1]) ? args[1] : Array.isArray(args[2]) ? args[2] : null;
+
+    if (children?.length) {
+        for (let i = 0; i < children.length; i++) {
+            let child = children[i];
+            if (isPlain(child)) {
+                children[i] = self(child);
+            }
+        }
+    }
+
+    return h(...args);
+
 }
 
 function methods(t: any, flat = false) {
@@ -272,20 +267,25 @@ export class Container {
     when(type: any) {
         let self: Container = this;
         return {
-            use(handler: (value: any) => any) {
+            use(handler: (value: any, h?: any) => any) {
                 self._map.set(type, handler);
                 return self;
             }
         }
     }
 
-    resolve(element: any) {
+    resolve(element: any, h: any) {
         const map = this._map;
         if (element && element.constructor) {
             if (this._map.has(element.constructor)) {
-                return map.get(element.constructor)(element);
+                return map.get(element.constructor)(element, h);
             }
+        }
+        if (this._map.has(element)) {
+            return this._map.get(element)(element, h);
         }
         return null;
     }
 }
+
+

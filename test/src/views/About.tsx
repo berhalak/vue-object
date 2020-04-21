@@ -1,18 +1,23 @@
 import { event, slot, Handler, Container } from "@/api"
-import Box from "./Box.vue"
+import { Test } from './Test';
 
+class Name {
+  render() {
+    return <span>Name content</span>
+  }
+}
 
-class Test {
-  render(h?: any): any {
-
+class MyText {
+  render() {
+    return <span>
+      My name is <Name /> or {new Name()}
+    </span>
   }
 }
 
 export class About {
   render() {
-    const b = 1;
-    return <div>
-      <Box />
-    </div>
+    const b = new MyText();
+    return <Test name="hello" />
   }
 }

@@ -1,12 +1,12 @@
 module.exports = {
     runtimeCompiler: true,
-     devServer: {
+    devServer: {
         disableHostCheck: true
     },
-	// keep class names doesn't work, so remove for now
-	configureWebpack: {
-		optimization: {
-			minimize: false
-		}
+    // keep class names doesn't work, so remove for now
+    configureWebpack: {
+        optimization: {
+            minimize: false
+        }
     }
 }

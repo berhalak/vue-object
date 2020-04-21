@@ -1,9 +1,9 @@
 <template>
-	<div>vue info</div>
+	<div>vue info name is {{name}}</div>
 </template>
 <script>
 export default {
-	props: []
+	props: ["name"]
 };
 </script>
 <style lang="scss">
