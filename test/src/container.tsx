@@ -4,7 +4,8 @@ import VueInfo from "./VueInfo.vue"
 
 class MyInfo {
     render() {
-        return <VueInfo />
+        let v: any = VueInfo;
+        return <v />;
     }
 }
 

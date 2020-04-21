@@ -31,11 +31,7 @@ export const Renderer = {
                 const self = this;
                 this.$createElement = function (...args: any[]) {
 
-                    // for (let p of configuration.plugins) {
-                    //     if (p instanceof Container) {
-                    //         args = p.resolve(args);
-                    //     }
-                    // }
+
 
                     return smart(was)(...args);
                 }
@@ -98,8 +94,19 @@ function smart(h: any) {
                         return Convert(el);
                     } else {
                         if (typeof el == 'object' && el.render) {
-                            if (!el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode')
+                            if (!el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode') {
+
+                                for (let p of configuration.plugins) {
+                                    if (p instanceof Container) {
+                                        const r = p.resolve(el);
+                                        if (r != null) {
+                                            return r.render(custom);
+                                        }
+                                    }
+                                }
+
                                 return el.render(custom);
+                            }
                         }
                     }
                 }
@@ -109,9 +116,6 @@ function smart(h: any) {
 
 
         if (args) {
-
-
-
             args = convert(args);
         }
 
@@ -275,35 +279,13 @@ export class Container {
         }
     }
 
-    resolve(args: any[]) {
+    resolve(element: any) {
         const map = this._map;
-
-        if (args.length >= 3 && args[2]) {
-            for (let i = 0; i < args[2].length; i++) {
-                let el = args[2][i];
-                let type = el.constructor;
-                if (type && map.has(type)) {
-                    args[2][i] = map.get(type)(el);
-                }
+        if (element && element.constructor) {
+            if (this._map.has(element.constructor)) {
+                return map.get(element.constructor)(element);
             }
         }
-        if (args.length >= 2 && args[1]) {
-            for (let i = 0; i < args[1].length; i++) {
-                let el = args[1][i];
-                if (el) {
-                    let type = el.constructor;
-                    if (type && map.has(type)) {
-                        args[1][i] = map.get(type)(el);
-                    }
-                }
-            }
-        }
-        if (args[0]) {
-            if (map.has(args[0])) {
-                args[0] = map.get(args[0]);
-            }
-        }
-
-        return args;
+        return null;
     }
 }
