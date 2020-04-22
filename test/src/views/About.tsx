@@ -18,6 +18,8 @@ class MyText {
 export class About {
   render() {
     const b = new MyText();
-    return <Test name="hello" />
+    return <div>
+      {[b, b, b]}
+    </div>
   }
 }

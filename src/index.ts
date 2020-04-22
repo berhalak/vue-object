@@ -81,6 +81,7 @@ function customRender(h: any, args: any[]) {
         return customRender(h, sub);
     }
 
+
     function resolve(el: any) {
         for (let p of configuration.plugins) {
             if (p instanceof Container) {
@@ -123,6 +124,9 @@ function customRender(h: any, args: any[]) {
             let child = children[i];
             if (isPlain(child)) {
                 children[i] = self(child);
+            }
+            if (Array.isArray(child)) {
+                children[i] = child.map(x => self(x));
             }
         }
     }
