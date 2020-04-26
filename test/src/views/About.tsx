@@ -8,10 +8,18 @@ class Name {
 }
 
 class MyText {
+
+  header() {
+    console.log(JSON.stringify(this));
+    return <div>This is header</div>;
+  }
+
   render() {
-    return <span>
+    return <div>
+      {this.header()}
+
       My name is <Name /> or {new Name()}
-    </span>
+    </div>
   }
 }
 

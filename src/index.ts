@@ -113,6 +113,15 @@ function customRender(h: any, args: any[]) {
 	let element = resolve(args[0]);
 
 	if (isPlain(element)) {
+
+		if (!Object.getOwnPropertyDescriptor(element, "$createElement")) {
+			Object.defineProperty(element, "$createElement", {
+				enumerable: false,
+				writable: false,
+				value: self
+			});
+		}
+
 		return element.render(self);
 	}
 
