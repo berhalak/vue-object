@@ -41,7 +41,6 @@ export class Home {
   text = "Hello"
 
   render() {
-    debugger;
     return <div>
       <Panel text={this.text} />
       <TextBox value={this.text} onInput={(x: any) => this.text = x} />

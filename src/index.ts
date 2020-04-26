@@ -50,7 +50,8 @@ globalThis.React = {
 
 		if (typeof el == 'function') {
 			const instance = new el(props);
-			return instance;
+			const Vue = configuration.vue;
+			return Vue.observable(instance);
 		}
 		if (typeof el == 'object') {
 			Object.assign(el, props);
@@ -66,12 +67,28 @@ globalThis.React = {
 	}
 }
 
+function native(h: any, el: any) {
+	const props: any = {};
+	if (el.props) {
+		for (let key in el.props) {
+			if (key.startsWith("on")) {
+				let name = key.replace("on", "").toLowerCase();
+				props.on = props.on || {};
+				props.on[name] = el.props[key];
+			} else {
+				props.attrs = props.attrs || {};
+				props.attrs[key] = el.props[key];
+			}
+		}
+	}
+	return h(el.html, props, el.children);
+}
+
 function vueRender(h: any, el: any) {
 	if (typeof el == 'object' && typeof el.render == 'function' && !el.html) {
 		return vueRender(h, el.render());
 	}
 	if (typeof el == 'object' && el.html) {
-		debugger
 	}
 	function renChild(el: any) {
 		if (el && Array.isArray(el.children)) {
@@ -82,13 +99,12 @@ function vueRender(h: any, el: any) {
 				}
 			}
 		}
-		debugger;
-		return h(el.html, el.props, el.children);
+		return native(h, el);
 	}
 
 	renChild(el);
 
-	return h(el.html, el.props, el.children);
+	return native(h, el);
 }
 
 export const Renderer = {

@@ -51,7 +51,6 @@ export class About {
     const b = this.b;
     return <div>
       {b}
-      {[b, b, b]}
     </div>
   }
 }
