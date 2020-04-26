@@ -21,19 +21,88 @@ function isClass(obj: any) {
 }
 
 
+declare global {
+	var React: any;
+}
+
+function renderChildren(children: any[]) {
+	for (let i = 0; i < children.length; i++) {
+		let el = children[i];
+		if (el !== null && el !== undefined && typeof el != 'object') {
+			continue;
+		}
+		if (Array.isArray(el)) {
+			renderChildren(el);
+			continue;
+		} else {
+			if (el && el.render) {
+				children[i] = el.render();
+				continue;
+			}
+		}
+	}
+}
+
+globalThis.React = {
+	createElement(el: any, props: any, ...children: any[]) {
+
+		renderChildren(children);
+
+		if (typeof el == 'function') {
+			const instance = new el(props);
+			return instance;
+		}
+		if (typeof el == 'object') {
+			Object.assign(el, props);
+			return el;
+		}
+		if (typeof el == 'string' || typeof el == 'number') {
+			return {
+				html: el,
+				props,
+				children,
+			}
+		}
+	}
+}
+
+function vueRender(h: any, el: any) {
+	if (typeof el == 'object' && typeof el.render == 'function' && !el.html) {
+		return vueRender(h, el.render());
+	}
+	if (typeof el == 'object' && el.html) {
+		debugger
+	}
+	function renChild(el: any) {
+		if (el && Array.isArray(el.children)) {
+			for (let i = 0; i < el.children.length; i++) {
+				let child = el.children[i];
+				if (typeof child != 'string') {
+					el.children[i] = renChild(child);
+				}
+			}
+		}
+		debugger;
+		return h(el.html, el.props, el.children);
+	}
+
+	renChild(el);
+
+	return h(el.html, el.props, el.children);
+}
 
 export const Renderer = {
 	install(vue: any) {
 		configuration.vue = vue;
-		vue.mixin({
-			beforeCreate(this: any) {
-				const was = this.$createElement;
-				const self = this;
-				this.$createElement = function (...args: any[]) {
-					return customRender(was, args);
-				}
-			}
-		})
+		// vue.mixin({
+		// 	beforeCreate(this: any) {
+		// 		const was = this.$createElement;
+		// 		const self = this;
+		// 		this.$createElement = function (...args: any[]) {
+		// 			return customRender(was, args);
+		// 		}
+		// 	}
+		// })
 	}
 }
 
@@ -76,73 +145,73 @@ export const Wrap = {
 	}
 } as any;
 
-function customRender(h: any, args: any[]) {
+// function customRender(h: any, args: any[]) {
 
-	if (!args || args.length == 0) {
-		return h(args);
-	}
+// 	if (!args || args.length == 0) {
+// 		return h(args);
+// 	}
 
-	if (!args[0]) {
-		return h(args);
-	}
+// 	if (!args[0]) {
+// 		return h(args);
+// 	}
 
-	const self = (...sub: any[]) => {
-		return customRender(h, sub);
-	}
+// 	const self = (...sub: any[]) => {
+// 		return customRender(h, sub);
+// 	}
 
 
-	function resolve(el: any) {
-		for (let p of configuration.plugins) {
-			if (p instanceof Container) {
-				const r = p.resolve(el, self);
-				if (r != null) {
-					return r;
-				}
-			}
-		}
-		return el;
-	}
+// 	function resolve(el: any) {
+// 		for (let p of configuration.plugins) {
+// 			if (p instanceof Container) {
+// 				const r = p.resolve(el, self);
+// 				if (r != null) {
+// 					return r;
+// 				}
+// 			}
+// 		}
+// 		return el;
+// 	}
 
-	function isPlain(el: any) {
-		if (el && !el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode') {
-			return typeof el.render == 'function';
-		}
-		return false;
-	}
+// 	function isPlain(el: any) {
+// 		if (el && !el._compiled && el.constructor.name != 'Object' && el.constructor.name != 'VNode') {
+// 			return typeof el.render == 'function';
+// 		}
+// 		return false;
+// 	}
 
-	let element = resolve(args[0]);
+// 	let element = resolve(args[0]);
 
-	if (isPlain(element)) {
-		return element.render(self);
-	}
+// 	if (isPlain(element)) {
+// 		return element.render(self);
+// 	}
 
-	if (element.constructor?.name == "VNode") {
-		return element;
-	}
+// 	if (element.constructor?.name == "VNode") {
+// 		return element;
+// 	}
 
-	if (typeof element == 'function') {
-		element = Convert(element);
-	}
+// 	if (typeof element == 'function') {
+// 		element = Convert(element);
+// 	}
 
-	args[0] = element;
+// 	args[0] = element;
 
-	let children = Array.isArray(args[1]) ? args[1] : Array.isArray(args[2]) ? args[2] : null;
+// 	let children = Array.isArray(args[1]) ? args[1] : Array.isArray(args[2]) ? args[2] : null;
 
-	if (children?.length) {
-		for (let i = 0; i < children.length; i++) {
-			let child = children[i];
-			if (isPlain(child)) {
-				children[i] = self(child);
-			}
-			if (Array.isArray(child)) {
-				children[i] = child.map(x => self(x));
-			}
-		}
-	}
+// 	if (children?.length) {
+// 		for (let i = 0; i < children.length; i++) {
+// 			let child = children[i];
+// 			if (isPlain(child)) {
+// 				children[i] = self(child);
+// 			}
+// 			if (Array.isArray(child)) {
+// 				children[i] = child.map(x => self(x));
+// 			}
+// 		}
+// 	}
 
-	return h(...args);
+// 	return h(...args);
 
-}
+// }
 
 function methods(t: any, flat = false) {
 	if (t == null) return [];
@@ -217,34 +286,39 @@ export function Convert(type: any): any {
 declare global {
 	namespace JSX {
 		// tslint:disable no-empty-interface
-		interface Element { }
+		interface Element {
+		}
 		// tslint:disable no-empty-interface
-		interface ElementClass { }
+		interface ElementClass {
+		}
 		interface IntrinsicElements {
 			[elem: string]: any
 		}
+
 	}
 }
+
 
 const configuration = {
 	vue: null,
 	plugins: []
 }
 
-export function render(main: any, tag = '#app') {
+
+export function render<T = any>(main: T, tag = '#app'): T {
 	const Vue = configuration.vue;
 	let vueData = {};
-	if (!main._compiled) {
+	if (!(main as any)._compiled) {
 		Object.assign(main, Vue.observable(main));
 		vueData = {
 			render: (h: any) => {
-				return main.render(h);
+				return vueRender(h, main);
 			}
 		}
 	} else {
 		vueData = {
 			render: (h: any) => {
-				return h(main);
+				return vueRender(h, main);
 			}
 		}
 	}
@@ -254,6 +328,8 @@ export function render(main: any, tag = '#app') {
 	}
 
 	new Vue(vueData).$mount(tag);
+
+	return main;
 }
 
 render.install = function (vue: any) {

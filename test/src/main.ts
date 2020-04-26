@@ -9,4 +9,8 @@ import { Test } from '@/views/Test';
 Vue.use(Renderer);
 Vue.use(Plugin(Test, Box));
 
-render(new About());
+const about = render(new About());
+
+setTimeout(() => {
+    about.inc();
+}, 2000);
