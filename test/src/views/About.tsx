@@ -7,15 +7,39 @@ class Name {
   }
 }
 
+class Header {
+  counter = 1;
+  constructor() {
+    console.log("Header is created")
+  }
+  click() {
+    this.counter++
+  }
+  main() {
+    return <div>Main header
+      <div>
+        {this.counter}
+      </div>
+      <button onClick={() => this.click()}>Increment</button>
+    </div>
+  }
+}
+
 class MyText {
 
+  myHeader = new Header();
+
   header() {
-    console.log(JSON.stringify(this));
-    return <div>This is header</div>;
+    return this.myHeader.main();
+  }
+
+  inc() {
+    this.myHeader.counter += 200;
   }
 
   render() {
     return <div>
+
       {this.header()}
 
       My name is <Name /> or {new Name()}
@@ -24,10 +48,23 @@ class MyText {
 }
 
 export class About {
+  p = new MyText();
   render() {
     const b = new MyText();
     return <div>
-      {[b, b, b]}
+      <div>Created by new</div>
+      {b}
+      <hr />
+      <div>Created by factory</div>
+      <MyText />
+      <hr />
+      <div>My prop</div>
+      {this.p}
+      <button onClick={() => this.click()}>Increment</button>
+
     </div>
+  }
+  click() {
+    this.p.inc();
   }
 }

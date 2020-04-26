@@ -111,18 +111,27 @@ function customRender(h: any, args: any[]) {
 	}
 
 	let element = resolve(args[0]);
+	args[0] = element;
 
 	if (isPlain(element)) {
 
-		if (!Object.getOwnPropertyDescriptor(element, "$createElement")) {
-			Object.defineProperty(element, "$createElement", {
-				enumerable: false,
-				writable: false,
-				value: self
-			});
-		}
+		Object.defineProperty(Object.prototype, "$createElement", {
+			enumerable: false,
+			configurable: true,
+			writable: true,
+			value: self
+		});
 
-		return element.render(self);
+		element = WrapInstance(element);
+		args[0] = element;
+
+		return h(...args);
+
+		// element = configuration.vue.observable(element);
+
+		// const result = element.render(self);
+
+		// return result;
 	}
 
 	if (element.constructor?.name == "VNode") {
@@ -131,9 +140,10 @@ function customRender(h: any, args: any[]) {
 
 	if (typeof element == 'function') {
 		element = Convert(element);
+		args[0] = element;
+
 	}
 
-	args[0] = element;
 
 	let children = Array.isArray(args[1]) ? args[1] : Array.isArray(args[2]) ? args[2] : null;
 
@@ -173,6 +183,17 @@ function methods(t: any, flat = false) {
 		return [...proto(t.prototype)]
 	} else {
 		return [...proto(t.constructor.prototype)]
+	}
+}
+
+function WrapInstance(data: any) {
+	return {
+		data() {
+			return data
+		},
+		render(h: any) {
+			return data.render(h);
+		}
 	}
 }
 
