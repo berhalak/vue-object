@@ -366,11 +366,11 @@ export function stop(e: any) {
 export interface Renderable { render(...args: any): JSX.Element }
 
 export class Render implements Renderable {
-	constructor(private handler: () => JSX.Element) {
+	constructor(private handler: (h: any) => JSX.Element) {
 
 	}
 
-	render() {
-		return this.handler();
+	render(h: any) {
+		return this.handler(h);
 	}
 }

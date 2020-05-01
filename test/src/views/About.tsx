@@ -1,5 +1,6 @@
-import { event, slot, Handler, Container } from "@/api"
+import { Render, event, slot, Handler, Container } from "@/api"
 import { Test } from './Test';
+
 
 class Name {
   render() {
@@ -49,6 +50,9 @@ class MyText {
 
 export class About {
   p = new MyText();
+
+  l = new Render((h) => <div>hello from render</div>);
+
   render() {
     const b = new MyText();
     return <div>
@@ -62,6 +66,7 @@ export class About {
       {this.p}
       <button onClick={() => this.click()}>Increment</button>
 
+      {this.l}
     </div>
   }
   click() {
