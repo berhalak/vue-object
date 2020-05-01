@@ -361,3 +361,16 @@ export function stop(e: any) {
 	if (e && e.stopPropagation) e.stopPropagation();
 	if (e && e.preventDefault) e.preventDefault();
 }
+
+
+export interface Renderable { render(...args: any): JSX.Element }
+
+export class Render implements Renderable {
+	constructor(private handler: () => JSX.Element) {
+
+	}
+
+	render() {
+		return this.handler();
+	}
+}
