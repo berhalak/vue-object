@@ -1,7 +1,7 @@
 {
 	"name": "vue-object",
 	"private": false,
-	"version": "0.0.32",
+	"version": "0.0.33",
 	"description": "Vue object framework",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",

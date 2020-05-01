@@ -261,6 +261,14 @@ const configuration = {
 	plugins: []
 }
 
+export function Observable<T>(component: T): T {
+	if (!configuration.vue) {
+		console.warn("Vue renderer wasn't installed, singletons are not reactive");
+		return component;
+	}
+	return configuration.vue.observable(component);
+}
+
 export function render(main: any, tag = '#app') {
 	const Vue = configuration.vue;
 	let vueData = {};
