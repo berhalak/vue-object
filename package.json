@@ -1,8 +1,8 @@
 {
 	"name": "vue-object",
 	"private": false,
-	"version": "0.0.31",
-	"description": "Typescript template",
+	"version": "0.0.32",
+	"description": "Vue object framework",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
@@ -20,7 +20,8 @@
 	"keywords": [
 		"vue",
 		"library",
-		"oop"
+		"oop",
+		"framework"
 	],
 	"license": "MIT",
 	"bugs": {

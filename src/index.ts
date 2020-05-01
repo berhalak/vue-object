@@ -345,3 +345,11 @@ export class Container {
 }
 
 
+/**
+ * Stops propagation of an event
+ * @param e Click event
+ */
+export function stop(e: any) {
+	if (e && e.stopPropagation) e.stopPropagation();
+	if (e && e.preventDefault) e.preventDefault();
+}
