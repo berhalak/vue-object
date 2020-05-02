@@ -141,7 +141,6 @@ function customRender(h: any, args: any[]) {
 	if (typeof element == 'function') {
 		element = Convert(element);
 		args[0] = element;
-
 	}
 
 
@@ -259,9 +258,13 @@ declare global {
 		// tslint:disable no-empty-interface
 		interface Element { }
 		// tslint:disable no-empty-interface
-		interface ElementClass { }
+		interface ElementClass { render(h?: any): JSX.Element }
 		interface IntrinsicElements {
 			[elem: string]: any
+		}
+		interface IntrinsicClassAttributes<T> {
+			class?: any;
+			style?: any;
 		}
 	}
 }

@@ -52,6 +52,16 @@ class MyText {
   }
 }
 
+class Dummy {
+  private val = '';
+  constructor({ val }) {
+    this.val = val;
+  }
+  render() {
+    return <div>{this.val}</div>
+  }
+}
+
 export class About {
   p = new MyText();
 
@@ -65,6 +75,7 @@ export class About {
     const b = new MyText();
     return <div>
       <div>Created by new</div>
+      <Dummy val={1} />
       {b}
       <hr />
       <div>Created by factory</div>
