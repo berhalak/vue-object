@@ -38,6 +38,10 @@ class MyText {
     this.myHeader.counter += 200;
   }
 
+  created() {
+    console.log("My text created");
+  }
+
   render() {
     return <div>
 
@@ -52,6 +56,10 @@ export class About {
   p = new MyText();
 
   l = new Render((h) => <div>hello from render</div>);
+
+  created() {
+    console.log("Created");
+  }
 
   render() {
     const b = new MyText();

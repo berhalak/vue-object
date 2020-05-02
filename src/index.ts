@@ -191,6 +191,11 @@ function WrapInstance(data: any) {
 		data() {
 			return data
 		},
+		created() {
+			if (data && typeof data.created == 'function') {
+				data.created();
+			}
+		},
 		render(h: any) {
 			return data.render(h);
 		}
@@ -212,6 +217,11 @@ export function Convert(type: any): any {
 				})
 			}
 			return data;
+		},
+		created() {
+			if (typeof type.prototype.created == 'function') {
+				type.prototype.created.call(this);
+			}
 		},
 		render(h: any) {
 			return type.prototype.render.call(this, h);
@@ -275,6 +285,11 @@ export function render(main: any, tag = '#app') {
 	if (!main._compiled) {
 		Object.assign(main, Vue.observable(main));
 		vueData = {
+			created() {
+				if (typeof main.created == 'function') {
+					main.created();
+				}
+			},
 			render: (h: any) => {
 				return main.render(h);
 			}
