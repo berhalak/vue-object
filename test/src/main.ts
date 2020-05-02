@@ -1,3 +1,4 @@
+import { Home } from './views/Home';
 import { render, Renderer, Plugin } from "@/api"
 import "./router"
 import Vue from "vue";
@@ -9,4 +10,4 @@ import { Test } from '@/views/Test';
 Vue.use(Renderer);
 Vue.use(Plugin(Test, Box));
 
-render(new About());
+render(new Home());

@@ -68,7 +68,7 @@ export class About {
       {b}
       <hr />
       <div>Created by factory</div>
-      <MyText />
+      <MyText class="hello" />
       <hr />
       <div>My prop</div>
       {this.p}

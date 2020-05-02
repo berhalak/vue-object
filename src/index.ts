@@ -76,6 +76,10 @@ export const Wrap = {
 	}
 } as any;
 
+function isEmptyFunction(val: any) {
+	return val && typeof val == 'function' && val.name == "anonymous" && val.toString() == new Function().toString();
+}
+
 function customRender(h: any, args: any[]) {
 
 	if (!args || args.length == 0) {
@@ -84,6 +88,27 @@ function customRender(h: any, args: any[]) {
 
 	if (!args[0]) {
 		return h(args);
+	}
+
+	// change onClick handler
+
+	if (args.length > 1 && !Array.isArray(args[1])) {
+		const data = args[1];
+		if (data.on) {
+			for (let key in data.on) {
+				let val = data.on[key];
+				if (val && typeof val == 'object') {
+					data.on[key] = function (args: any) {
+						if (val.click && isEmptyFunction(val.click)) {
+							val.$emit(key, args);
+						}
+						if (typeof val.click == 'function') {
+							val.click(args);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	const self = (...sub: any[]) => {

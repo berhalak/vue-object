@@ -1,50 +1,42 @@
-import { prop, Handler, event, Wrap, emit } from '@/api';
-import Vue from 'vue'
+import { prop, event } from "@/api"
 
-export class Panel {
+class MyButton {
+
   @prop
-  text = '';
-
-  render() {
-    return <div>Result: {this.text}</div>
-  }
-}
-
-export class TextBox {
-  @prop
-  value: string;
-
-  prefix = '';
+  text: string;
 
   @event
-  input: Handler;
-
-  handle(text: string) {
-    this.input(text);
-  }
+  click;
 
   render() {
-    return <div>
-      Enter text:
-      <input type="text" value={this.value} onInput={(x: any) => this.handle(x.target.value)} />
-      <br />
-      Enter prefix
-      <input type="text" value={this.prefix} onInput={(x: any) => this.prefix = x.target.value} />
-      <br />
-      Prefixed value is {this.prefix + this.value}
+    return <div onClick={this} style="border: 1px solid red; background: red; padding: 10px; color: white">
+      {this.text || "Click me"}
     </div>
   }
 }
 
+
 export class Home {
 
-  text = "Hello"
+  text = "hello";
+  btn = new MyButton();
+
+  constructor() {
+    this.btn.text = "custom button"
+    this.btn.click = () => {
+      this.text += " btn";
+    }
+  }
+
+  click() {
+    this.text += " click";
+  }
 
   render() {
-    debugger;
     return <div>
-      <Panel text={this.text} />
-      <TextBox value={this.text} onInput={(x: any) => this.text = x} />
+      {this.text}
+      <MyButton onClick={this} text="jsx buttn" />
+      {this.btn}
     </div>
   }
 }
